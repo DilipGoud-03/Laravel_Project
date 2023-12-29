@@ -6,8 +6,8 @@
         <div class="col-md-8">
             <div class="card">
 
-                <div class="card-body">
-                    Hello welcome our Page
+                <div class="card-body ">
+                    welcome our Page
                 </div>
             </div>
         </div>

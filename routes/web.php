@@ -1,11 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\LoginRegisterController;
-use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\AuthController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\AdminController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,34 +16,38 @@ use Illuminate\Support\Facades\Auth;
 |
 */
 
-Route::get('/', function () {
-    return view('home');
-});
-Route::get('/register', [LoginRegisterController::class, 'register'])->name('register');
 
-Route::post('/store', [LoginRegisterController::class, 'store'])->name('store');
-
-Route::get('/login', [LoginRegisterController::class, 'login'])->name('login');
-
-Route::post('/loginUserAdmin', [LoginRegisterController::class, 'loginUserAdmin'])->name('loginUserAdmin');
-
-Route::group(['middleware' => ['auth', 'isAdmin']], function () {
-
-    Route::get('/AuthDashboard', [LoginRegisterController::class, 'AuthDashboard'])->name('AuthDashboard');
+Route::controller(AuthController::class)->group(function () {
+    Route::get('/', 'index')->name('home');
+    Route::get('/register', 'register')->name('register');
+    Route::post('/store', 'store')->name('store');
+    Route::get('/login', 'login')->name('login');
+    Route::post('/loginRequest', 'loginRequest')->name('loginRequest');
+    Route::get('/logout', 'logout')->name('logout');
 });
 
-Route::get('/dashboard', [LoginRegisterController::class, 'dashboard'])->name('dashboard');
+Route::middleware(['is_admin'])->group(function () {
 
-Route::get('/logout', [LoginRegisterController::class, 'logout'])->name('logout');
+    Route::controller(AdminController::class)->group(function () {
+        Route::get('/adminDashboard', 'dashboard')->name('adminDashboard');
 
-Route::get('/userViewInformation', [LoginRegisterController::class, 'userViewInformation'])->name('userViewInformation');
+        Route::get('/deleteUserByAdmin/{id}', 'deleteUserByAdmin')->name('deleteUserByAdmin');
+        Route::get('/userInformationByAdmin', 'userInformationByAdmin')->name('userInformationByAdmin');
+        Route::get('/updateUserIndex/{id}', 'updateUserIndex')->name('updateUserIndex');
+        Route::post('/saveUpdate/{id}', 'saveUpdate')->name('saveUpdate');
 
-Route::get('/userInformation', [LoginRegisterController::class, 'userInformation'])->name('userInformation');
+        Route::get('/updateUserRoleIndex/{id}', 'updateUserRoleIndex')->name('updateUserRoleIndex');
+        Route::post('/saveUpdateUserRole/{id}', 'saveUpdateUserRole')->name('saveUpdateUserRole');
+    });
+});
+Route::middleware(['is_user'])->group(function () {
 
-Route::get('/deleteUserByAdmin/{id}', [LoginRegisterController::class, 'deleteUserByAdmin'])->name('deleteUserByAdmin');
+    Route::controller(UserController::class)->group(function () {
+        Route::get('/userDashboard', 'userDashboard')->name('userDashboard');
 
-Route::get('/deleteUserByUser', [LoginRegisterController::class, 'deleteUserByUser'])->name('deleteUserByUser');
-
-Route::get('/userInformation', [LoginRegisterController::class, 'userInformation'])->name('userInformation');
-
-Route::get('/userInformation', [LoginRegisterController::class, 'userInformation'])->name('userInformation');
+        Route::get('/deleteUserByUser/{id}', 'deleteUserByUser')->name('deleteUserByUser');
+        Route::get('/userViewInformation', 'userViewInformation')->name('userInformation');
+        Route::get('/update/{id}', 'update')->name('update');
+        Route::post('/storeUpdateUser/{id}', 'storeUpdateUser')->name('storeUpdateUser');
+    });
+});

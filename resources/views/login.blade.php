@@ -7,11 +7,15 @@
         <div class="alert alert-success">
             {{ $message }}
         </div>
+        @elseif ($message = Session::get('error'))
+        <div class="alert alert-success">
+            {{ $message }}
+        </div>
         @endif
         <div class="card">
             <div class="card-header">Login</div>
             <div class="card-body">
-                <form action="{{ route('loginUserAdmin') }}" method="post">
+                <form action="{{ route('loginRequest') }}" method="post">
                     @csrf
                     <div class="mb-3 row">
                         <label for="email" class="col-md-4 col-form-label text-md-end text-start">Email Address</label>
