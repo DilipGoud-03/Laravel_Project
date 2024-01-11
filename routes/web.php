@@ -24,6 +24,7 @@ Route::controller(AuthController::class)->group(function () {
     Route::get('/login', 'login')->name('login');
     Route::post('/loginRequest', 'loginRequest')->name('loginRequest');
     Route::get('/logout', 'logout')->name('logout');
+    Route::get('account/verify/{token}', 'verifyAccount')->name('user.verify');
 });
 
 Route::middleware(['is_admin'])->group(function () {
@@ -38,12 +39,15 @@ Route::middleware(['is_admin'])->group(function () {
 
         Route::get('/updateUserRoleIndex/{id}', 'updateUserRoleIndex')->name('updateUserRoleIndex');
         Route::post('/saveUpdateUserRole/{id}', 'saveUpdateUserRole')->name('saveUpdateUserRole');
+
+        Route::get('/userEnableIndex/{id}', 'userEnableIndex')->name('userEnableIndex');
+        Route::post('/saveUserEnableStatus/{id}', 'saveUserEnableStatus')->name('saveUserEnableStatus');
     });
 });
 Route::middleware(['is_user'])->group(function () {
 
     Route::controller(UserController::class)->group(function () {
-        Route::get('/userDashboard', 'userDashboard')->name('userDashboard');
+        Route::get('/userDashboard', 'userDashboard')->name('userDashboard')->middleware(['auth', 'is_verify_email']);
 
         Route::get('/deleteUserByUser/{id}', 'deleteUserByUser')->name('deleteUserByUser');
         Route::get('/userViewInformation', 'userViewInformation')->name('userInformation');

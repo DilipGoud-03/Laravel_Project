@@ -15,6 +15,7 @@
                 <th>Name</th>
                 <th>Email</th>
                 <th>Role</th>
+                <th>User Status</th>
                 <th>Created Time</th>
                 <th>Updated Time</th>
                 <th>Action</th>
@@ -30,6 +31,8 @@
                 <td><a href="{{ route('updateUserRoleIndex',[$user->id])}}" title="Click to change role">
                         <button class="btn">@if($user->role==0) User @endif</button></a>
                 </td>
+                <td><a href="{{ route('userEnableIndex',[$user->id])}}" title="Click to verify email ">
+                        <button class="btn">@if($user->is_email_verified==1) Enable @else Desable @endif</button></a></td>
                 <td>{{$user->created_at}}</td>
                 <td>{{$user->updated_at}}</td>
                 <td>

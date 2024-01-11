@@ -30,7 +30,6 @@ class RecieveMail extends Mailable implements ShouldQueue
             subject: 'Recieve Mail',
         );
     }
-
     /**
      * Get the message content definition.
      */

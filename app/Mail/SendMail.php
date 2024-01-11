@@ -5,23 +5,48 @@ namespace App\Mail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
+use Illuminate\Mail\Mailables\Content;
+use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
+
 
 class SendMail extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
-    private  $testMailData;
+    private $sendMailData;
     /**
      * Create a new message instance.
      */
-    public function __construct($testMailData)
+    public function __construct($sendMailData)
     {
-        $this->testMailData = $testMailData;
+        $this->sendMailData = $sendMailData;
     }
 
-    public function build()
+    /**
+     * Get the message envelope.
+     */
+    public function envelope(): Envelope
     {
-        return $this->subject('Mail from Profilics')
-            ->view('emails.testMail', ['testMailData' =>  $this->testMailData]);
+        return new Envelope(
+            subject: 'Send Mail',
+        );
+    }
+
+    /**
+     * Get the message content definition.
+     */
+    function build()
+    {
+        return $this->view('emails.sendMailToUser', ['sendMailData' => $this->sendMailData]);
+    }
+
+    /**
+     * Get the attachments for the message.
+     *
+     * @return array<int, \Illuminate\Mail\Mailables\Attachment>
+     */
+    public function attachments(): array
+    {
+        return [];
     }
 }

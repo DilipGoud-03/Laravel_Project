@@ -69,5 +69,6 @@ class Kernel extends HttpKernel
     protected $routeMiddleware = [
         'is_admin' => \App\Http\Middleware\AdminMiddleware::class,
         'is_user' => \App\Http\Middleware\UserMiddleware::class,
+        'is_verify_email' => \App\Http\Middleware\IsVerifiyEmail::class,
     ];
 }

@@ -2,8 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Jobs\NewUserWelcomeMail;
-use App\Jobs\RecieveMailFromUser;
 use App\Mail\RecieveMail;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -11,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendMail;
+use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
@@ -31,26 +30,27 @@ class AuthController extends Controller
             'email' => 'required|email|max:150|unique:users',
             'password' => 'required|min:5|confirmed',
         ]);
-
-        $recieveMailData = User::create([
+        $token = Str::random(64);
+        User::create([
             'name' => $request->name,
             'email' => ($request->email),
             'password' => Hash::make($request->password),
+            'token' => $token
         ]);
-        $testMailData = [
-            'title' => ($request->name),
-            'body' => ('This is Mail From Profilics Pvt. Limited'),
-            'useremail' => ('Your Email: ' .  $request->email),
-            'userpassword' => ('and your Password : ' .  $request->password),
-            'thanksMessage' => ('Thank You for registring our website'),
-            'instruction' => ('We are remember you, Hope you will remind your password because we can not provide again.')
+        $recieveMailData = [
+            'name' => $request->name,
+            'email' => ($request->email),
+            'password' => ($request->password),
+            'token' => $request->token
+
         ];
-        Mail::to($request->email)->send(new SendMail(
-            $testMailData
-        ));
-        Mail::to($request->email)->send(new RecieveMail($recieveMailData));
-        // dispatch(new RecieveMailFromUser($request->email, $recieveMailData));
-        // dispatch(new NewUserWelcomeMail($request->email, $testMailData));
+        $sendMailData = [
+            'name' => $request->name,
+            'email' => ($request->email),
+            'password' => ($request->password),
+        ];
+        Mail::to($request->email)->send(new SendMail($sendMailData));
+        Mail::to('dilipgaurh2017@gmail.com')->send(new RecieveMail($recieveMailData));
         return redirect()->route('login')->withSuccess('Your registration has been submitted successfully Please Check Your Gmail');
     }
     function login()
@@ -60,7 +60,6 @@ class AuthController extends Controller
         }
         return view('login');
     }
-
     public function loginRequest(Request $request)
     {
         $request->validate([
@@ -92,5 +91,25 @@ class AuthController extends Controller
             $redirect = route('userDashboard');
         }
         return $redirect;
+    }
+
+    public function verifyAccount($token)
+    {
+        $verifyUser = User::where('token', $token)->first();
+
+        $message = 'Sorry user email cannot be identified.';
+
+        if (!is_null($verifyUser)) {
+
+            if (empty($verifyUser->is_email_verified)) {
+                $verifyUser->is_email_verified == 1;
+                $verifyUser->save();
+                $message = "User e-mail is verified. User can now login.";
+            } else {
+                $message = "User e-mail is already verified. User can now login.";
+            }
+        }
+
+        return redirect()->route('login')->with('message', $message);
     }
 }

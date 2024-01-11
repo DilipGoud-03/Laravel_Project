@@ -11,6 +11,10 @@
         <div class="alert alert-success">
             {{ $message }}
         </div>
+        @elseif ($message = Session::get('message'))
+        <div class="alert alert-success">
+            {{ $message }}
+        </div>
         @endif
         <div class="card">
             <div class="card-header">Login</div>
