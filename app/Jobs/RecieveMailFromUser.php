@@ -14,24 +14,20 @@ use App\Mail\RecieveMail;
 class RecieveMailFromUser implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-    private $recieveMailData;
-    private $request;
+
     /**
      * Create a new job instance.
      */
-    public function __construct($request, $recieveMailData)
+    public function __construct()
     {
-        $this->request = $request;
-        $this->recieveMailData = $recieveMailData;
     }
     /**
      * Execute the job.
      */
-    public function handle(): void
+    public function handle($request, $recieveMailData): void
     {
-
-        Mail::to($this->request)->send(new RecieveMail(
-            $this->recieveMailData
+        Mail::to($request)->send(new RecieveMail(
+            $recieveMailData
         ));
     }
 }

@@ -24,7 +24,7 @@ Route::controller(AuthController::class)->group(function () {
     Route::get('/login', 'login')->name('login');
     Route::post('/loginRequest', 'loginRequest')->name('loginRequest');
     Route::get('/logout', 'logout')->name('logout');
-    Route::get('account/verify/{token}', 'verifyAccount')->name('user.verify');
+    Route::get('/account/verify/{token}', 'verifyAccount')->name('userVerify');
 });
 
 Route::middleware(['is_admin'])->group(function () {

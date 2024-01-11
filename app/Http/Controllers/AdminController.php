@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Str;
 
 class AdminController extends Controller
 {
@@ -75,10 +76,18 @@ class AdminController extends Controller
             'email' => 'required|email|max:150|unique:users,email,' . $id,
             'is_email_verified' => 'required',
         ]);
-        User::find($request->id)->update(['is_email_verified' => $request->is_email_verified]);
+        $tokan = Str::random(64);
         if ($request->is_email_verified == 0) {
+            User::find($request->id)->update([
+                'is_email_verified' => $request->is_email_verified,
+                'token' => $tokan
+            ]);
             $status = 'Desable';
         } else {
+            User::find($request->id)->update([
+                'is_email_verified' => $request->is_email_verified,
+                'token' => 'varify'
+            ]);
             $status = 'Enable';
         }
         return redirect()->route('userInformationByAdmin')->withSuccess('User has been ' . $status);

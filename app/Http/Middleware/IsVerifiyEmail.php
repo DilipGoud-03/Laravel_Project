@@ -19,7 +19,7 @@ class IsVerifiyEmail
         if (!Auth::user()->is_email_verified) {
             auth()->logout();
             return redirect()->route('login')
-                ->with('message', 'You need to confirm your account. The author will does not verified your account, please wait untill verification.');
+                ->with('message', 'You need to confirm your account. The admin will does not verified your account, please wait untill verification.');
         }
         return $next($request);
     }

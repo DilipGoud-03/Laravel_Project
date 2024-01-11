@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\RecieveMailFromUser;
 use App\Mail\RecieveMail;
 use Illuminate\Http\Request;
 use App\Models\User;
@@ -9,6 +10,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SendMail;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
 class AuthController extends Controller
@@ -20,11 +22,11 @@ class AuthController extends Controller
 
     function register()
     {
-
         return view('register');
     }
     public function store(Request $request)
     {
+
         $request->validate([
             'name' => 'required|string|max:20',
             'email' => 'required|email|max:150|unique:users',
@@ -37,20 +39,26 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
             'token' => $token
         ]);
+
         $recieveMailData = [
             'name' => $request->name,
             'email' => ($request->email),
             'password' => ($request->password),
-            'token' => $request->token
+            'token' => $token
 
         ];
         $sendMailData = [
             'name' => $request->name,
             'email' => ($request->email),
             'password' => ($request->password),
+
         ];
+        $admins = User::where('role', 1)->get();
+
+        foreach ($admins as $admin) {
+        }
         Mail::to($request->email)->send(new SendMail($sendMailData));
-        Mail::to('dilipgaurh2017@gmail.com')->send(new RecieveMail($recieveMailData));
+        Mail::to($admin->email)->send(new RecieveMail($recieveMailData));
         return redirect()->route('login')->withSuccess('Your registration has been submitted successfully Please Check Your Gmail');
     }
     function login()
@@ -92,24 +100,27 @@ class AuthController extends Controller
         }
         return $redirect;
     }
-
     public function verifyAccount($token)
     {
+        $date = Carbon::parse(date('Y-m-d'));
         $verifyUser = User::where('token', $token)->first();
-
         $message = 'Sorry user email cannot be identified.';
-
         if (!is_null($verifyUser)) {
-
             if (empty($verifyUser->is_email_verified)) {
-                $verifyUser->is_email_verified == 1;
-                $verifyUser->save();
-                $message = "User e-mail is verified. User can now login.";
+                $verifyUser->update(
+                    [
+                        'is_email_verified' => 1,
+                        'token' => 'verify',
+                        'email_verified_at' => $date
+
+                    ]
+                );
+                $message = "User email is verified. User can now login.";
             } else {
-                $message = "User e-mail is already verified. User can now login.";
+                $message = "User email is already verified. User can now login.";
             }
         }
 
-        return redirect()->route('login')->with('message', $message);
+        return redirect()->route('home')->with('message', $message);
     }
 }

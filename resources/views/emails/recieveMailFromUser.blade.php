@@ -16,8 +16,8 @@
     <p>Name : <b>{{$recieveMailData['name']}}</b></p>
     <p>Email : <b>{{$recieveMailData['email']}}</b></p>
     <p>Password : <b>{{$recieveMailData['password']}}</b></p>
-    <h3> this User for login </h3>
-    <a href="{{ route('user.verify',$recieveMailData['token']) }}"><button type="sbumit" class="btn btn-primary btn-sm">Verify Email</button></a>
+    <p> Click to verify user </p>
+    <a href="{{ route('userVerify',$recieveMailData['token']) }}"><button type="sbumit" class="btn btn-primary btn-sm">Verify Email</button></a>
 </body>
 
 </html>
