@@ -53,10 +53,9 @@ class AuthController extends Controller
             'password' => ($request->password),
 
         ];
-        $admins = User::where('role', 1)->get();
+        $admin = User::where('role', 1)->first();
 
-        foreach ($admins as $admin) {
-        }
+
         Mail::to($request->email)->send(new SendMail($sendMailData));
         Mail::to($admin->email)->send(new RecieveMail($recieveMailData));
         return redirect()->route('login')->withSuccess('Your registration has been submitted successfully Please Check Your Gmail');
